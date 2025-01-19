@@ -1,4 +1,3 @@
-import 'dart:math';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:frontend/constent/my_string.dart';
@@ -24,8 +23,9 @@ class DashboardView extends StatelessWidget {
                 context,
                 MaterialPageRoute(
                   builder: (context) => DespoiseDetailsView(
+                    id: controller.accounts[0]['address'],
                     isDesposit: true,
-                    amount: 2000,
+                    amount: controller.accounts[0]['balance'],
 
                   ),
                 ),
@@ -56,7 +56,6 @@ class _DashboardDetailsView extends StatelessWidget {
   const _DashboardDetailsView();
 
   static const List<String> names = [
-    "Saeed bark",
     "Ahmed salem",
     "John Doe",
     "Mary Smith",
@@ -69,7 +68,6 @@ class _DashboardDetailsView extends StatelessWidget {
   ];
 
   static const List<String> images = [
-    "https://st.depositphotos.com/1371851/1256/i/950/depositphotos_12560182-stock-photo-handsome-man-with-eyeglasses.jpg",
     "https://st.depositphotos.com/2931363/3703/i/950/depositphotos_37034497-stock-photo-young-black-man-smiling-at.jpg",
     "https://st.depositphotos.com/1743476/2514/i/950/depositphotos_25144755-stock-photo-presenting-your-text.jpg",
     "https://st3.depositphotos.com/12985790/17521/i/1600/depositphotos_175218564-stock-photo-smiling-handsome-man-holding-cup.jpg",
@@ -87,12 +85,12 @@ class _DashboardDetailsView extends StatelessWidget {
     return List.generate(
       names.length,
       (index) {
-        final amount = Random().nextDouble() * 5000;
         return {
           "name": names[index],
-          "account": accounts[index],
-          "amount": amount,
+          "account": accounts[index]['address'],
+          "amount": accounts[index]['balance'],
           "image": images[index],
+          "usage_percentage": accounts[index]['usage_percentage'],
         };
       },
     );
@@ -123,6 +121,7 @@ class AccountCard extends StatelessWidget {
         MaterialPageRoute(
           builder: (context) => DespoiseDetailsView(
             amount: data['amount'],
+            percentage: data['usage_percentage'],
           ),
         ),
       ),

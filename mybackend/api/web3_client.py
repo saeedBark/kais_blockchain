@@ -23,78 +23,37 @@ def load_contract():
     contract_address = '0xE4Ee669F0425ca1c942FD9D1ac86414c44fe926c'  # Replace with your actual contract address
     return web3.eth.contract(address=contract_address, abi=abi)
 
-# Function to transfer funds between two accounts
-def transfer_funds(sender, recipient, amount):
-    contract = load_contract()
-    print('contract111111', contract)
-    sender_account = web3.to_checksum_address(sender)
-    print('sender_account', sender_account)
-    recipient_account = web3.to_checksum_address(recipient)
-    print('recipient_account', recipient_account)
+# Function to fetch all accounts with balances and claculate percentage from Ganache
+def get_all_accounts_with_balances():
+    """Fetch all accounts from Ganache."""
     
-    # Replace with your private key for the sender account
-    private_key = "0x70a46d291442a81de87724c90a4b8bdc91dd4b6bcfae4f28fbd79fa691fe77b4"
-    
-    
-    sender_balance = web3.eth.get_balance(sender_account)
-    print("Sender Balance:", web3.from_wei(sender_balance, 'ether'), "ETH")
-    
-    sender_contract_balance = contract.functions.getAccountBalance(sender_account).call()
-    print("Sender Contract Balance:", sender_contract_balance, "MUR")
-    
-    # if sender_contract_balance < Web3.to_wei(amount, 'ether'):
-    #  raise ValueError("Sender has insufficient balance in the contract")
+    accounts = web3.eth.accounts
+    accounts_with_balance = []
+    for account in accounts:
+        balance_wei = web3.eth.get_balance(account)
+        balance_eth = web3.from_wei(balance_wei, 'ether')
+        usage_percentage = ((100 - balance_eth) / 100) * 100  # Calculate percentage
 
-    
-    # Fund the sender account from another account
-    funding_amount = web3.to_wei(2, 'ether')  # Fund with 10 ETH
-    
-    print(funding_amount)
-    
-    # Build the transaction to call the `transfer` function
-    transaction = contract.functions.transfer(
-        sender_account,
-        recipient_account,
-        sender_contract_balance  
-        ).build_transaction({
-        'from': sender_account,
-        'nonce': web3.eth.get_transaction_count(sender_account),
-        'gas': 300000,  # Estimate gas limit
-        'gasPrice': web3.to_wei('20', 'gwei'),
-    })
-    
+        accounts_with_balance.append({
+            "address": account,
+            "balance":balance_eth,
+            "usage_percentage": usage_percentage
+        })
+    return accounts_with_balance
 
-    
-    print('transaction:', transaction)
-
-    # Sign transaction
-    signed = web3.eth.account.sign_transaction(transaction, private_key)
-    print('signed_transaction', signed)
-
-    # Send transaction
-    tx_hash = web3.eth.send_raw_transaction(signed.raw_transaction)
-    print('Transaction Hash:',web3.to_hex(tx_hash), )
-
-     # Wait for the transaction receipt
-    tx_receipt = web3.eth.wait_for_transaction_receipt(tx_hash)
-
-    # Print and return the transaction hash
-    print('Transaction Hash:',web3.to_hex(tx_hash),)
-    print('Transaction Receipt:', tx_receipt)
-    return web3.to_hex(tx_hash)
 
 
 # Function to transfer funds between two accounts
 def transfer_amount(sender, recipient, amount):
-    contract = load_contract()
-    print('contract111111', contract)
+    """Transfer funds between two accounts."""
     sender_account = web3.to_checksum_address(sender)
+    
+    
     print('sender_account', sender_account)
     recipient_account = web3.to_checksum_address(recipient)
     print('recipient_account', recipient_account)
     
     # Replace with your private key for the sender account
-    private_key = "0xb92fc131109efa47ea83109939b462c27494abed283c2d83414e8c93db1a120f"
     
     
     sender_balance = web3.eth.get_balance(sender_account)
@@ -104,6 +63,10 @@ def transfer_amount(sender, recipient, amount):
     funding_amount = web3.to_wei(2, 'ether')  # Fund with 10 ETH
     
     print(funding_amount)
+    
+    private_key =  '0x8d1f2849197c6b3269893ce6d98b0a257f23134935be40f7d7d710fc3fdb2a36'
+    print('private_key', private_key)
+
     
     # Prepare transaction
     transaction = {
@@ -132,13 +95,4 @@ def transfer_amount(sender, recipient, amount):
     return tx_hash
 
 
-def get_contract_balance():
-    contract = load_contract()
-    print('contract balance', contract)
-    balance = contract.functions.getAccountBalance().call()
-    print('this  balance', balance)
-    return web3.from_wei(balance, 'ether')
 
-def get_all_accounts():
-    """Fetch all accounts from Ganache."""
-    return web3.eth.accounts

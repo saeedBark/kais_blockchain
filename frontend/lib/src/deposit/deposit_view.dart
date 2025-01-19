@@ -1,12 +1,26 @@
 import 'package:flutter/material.dart';
 import 'package:frontend/constent/my_string.dart';
-import 'package:frontend/src/deposit_details/deposit_details_view.dart';
+import 'package:frontend/src/deposit/deposit_controller.dart';
+import 'package:provider/provider.dart';
 
 class DepositView extends StatelessWidget {
-  const DepositView({super.key});
+  final String address;
+  const DepositView({super.key, required this.address});
 
   @override
   Widget build(BuildContext context) {
+    return ChangeNotifierProvider(
+        create: (context) => DepositController(address: address),
+        child: _DespoistBody(),);
+  }
+}
+
+class _DespoistBody extends StatelessWidget {
+  const _DespoistBody();
+
+  @override
+  Widget build(BuildContext context) {
+    final controller = context.watch<DepositController>();
     return Scaffold(
       backgroundColor: AppColors.accent,
       appBar: AppBar(
@@ -15,81 +29,59 @@ class DepositView extends StatelessWidget {
       ),
       body: Container(
         margin: const EdgeInsets.all(16).copyWith(top: 80),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            const SizedBox(height: 80),
-            // Address TextField
-            TextField(
-              decoration: InputDecoration(
-                hintText: 'Enter The Address',
-                hintStyle: const TextStyle(color: Colors.grey),
-                filled: true,
-                fillColor: Colors.white,
-                border: OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(12),
-                  borderSide: BorderSide(color: AppColors.primary, width: 2),
-                ),
-                focusedBorder: OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(12),
-                  borderSide: BorderSide(color: AppColors.primary, width: 2),
-                ),
-                contentPadding: const EdgeInsets.symmetric(
-                  horizontal: 16,
-                  vertical: 12,
-                ),
-              ),
-            ),
-            const SizedBox(height: 16),
-            // Amount TextField
-            TextField(
-              decoration: InputDecoration(
-                hintText: 'Enter The Amount',
-                hintStyle: const TextStyle(color: Colors.grey),
-                filled: true,
-                fillColor: Colors.white,
-                border: OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(12),
-                  borderSide: BorderSide(color: AppColors.primary, width: 2),
-                ),
-                focusedBorder: OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(12),
-                  borderSide: BorderSide(color: AppColors.primary, width: 2),
-                ),
-                contentPadding: const EdgeInsets.symmetric(
-                  horizontal: 16,
-                  vertical: 12,
+        child: Form(
+          key: controller.formKey,
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              const SizedBox(height: 80),
+          
+              TextFormField(
+                controller: controller.amountController,
+                decoration: InputDecoration(
+                  hintText: 'Enter The Amount',
+                  hintStyle: const TextStyle(color: Colors.grey),
+                  filled: true,
+                  fillColor: Colors.white,
+                  border: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(12),
+                    borderSide: BorderSide(color: AppColors.primary, width: 2),
+                  ),
+                  focusedBorder: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(12),
+                    borderSide: BorderSide(color: AppColors.primary, width: 2),
+                  ),
+                  
+                  contentPadding: const EdgeInsets.symmetric(
+                    horizontal: 16,
+                    vertical: 12,
+                  ),
                 ),
               ),
-            ),
-            const SizedBox(height: 30),
-            // Deposit Button
-            InkWell(
-              onTap: () => Navigator.push(
-                context,
-                MaterialPageRoute(
-                  builder: (context) => const DespoiseDetailsView(),
-                ),
-              ),
-              child: Container(
-                height: 50,
-                decoration: BoxDecoration(
-                  borderRadius: BorderRadius.circular(12),
-                  color: AppColors.primary,
-                ),
-                child: const Center(
-                  child: Text(
-                    '+ DEPOSIT',
-                    style: TextStyle(
-                      color: Colors.white,
-                      fontSize: 24,
-                      fontWeight: FontWeight.bold,
+              const SizedBox(height: 30),
+              // Deposit Button
+              InkWell(
+                onTap: controller.deposit,
+                child: Container(
+                  height: 50,
+                  decoration: BoxDecoration(
+                    borderRadius: BorderRadius.circular(12),
+                    color: AppColors.primary,
+                  ),
+                  child: const Center(
+                    child: Text(
+                      '+ DEPOSIT',
+                      style: TextStyle(
+                        color: Colors.white,
+                        fontSize: 24,
+                        fontWeight: FontWeight.bold,
+                      ),
                     ),
                   ),
                 ),
               ),
-            ),
-          ],
+            ],
+          ),
         ),
       ),
     );
